@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>이채립 게임즈 - Lee Chae Rip Games</title>
     
-    <!-- [웹 앱 아이콘 설정] 브라우저 탭과 홈 화면에 표시될 아이콘(app-icon.png)을 연동했습니다 -->
     <link rel="shortcut icon" href="app-icon.png" type="image/x-icon">
     <link rel="apple-touch-icon" href="app-icon.png">
 
@@ -26,36 +25,55 @@
             from { transform: scale(0.95); opacity: 0; }
             to { transform: scale(1); opacity: 1; }
         }
+        
         /* 스크롤 포커스 시 부드럽게 반짝이는 하이라이트 효과 */
         .card-highlight {
             ring: 4px solid #6366f1;
             transform: translateY(-8px) scale(1.02);
             box-shadow: 0 20px 25px -5px rgb(99 102 241 / 0.15), 0 8px 10px -6px rgb(99 102 241 / 0.15);
         }
+
+        /* 💖 [추가] 좋아요 하트 통통 튀는 애니메이션 */
+        @keyframes heartBounce {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.4); }
+            100% { transform: scale(1); }
+        }
+        .heart-bounce svg {
+            animation: heartBounce 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        /* 좋아요 눌린 상태 스타일 */
+        .is-liked {
+            color: #ef4444 !important; /* Tailwind red-500 */
+        }
+        .is-liked svg {
+            fill: #ef4444;
+            stroke: #ef4444;
+        }
+
+        /* 🔗 [추가] 토스트 알림 애니메이션 */
+        @keyframes toastSlideUp {
+            0% { transform: translate(-50%, 100%); opacity: 0; }
+            15% { transform: translate(-50%, 0); opacity: 1; }
+            85% { transform: translate(-50%, 0); opacity: 1; }
+            100% { transform: translate(-50%, 100%); opacity: 0; }
+        }
+        .toast-animate {
+            animation: toastSlideUp 3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
     </style>
 </head>
-<body class="min-h-screen bg-slate-50 font-sans text-slate-800 selection:bg-indigo-200 scroll-smooth">
+<body class="min-h-screen bg-slate-50 font-sans text-slate-800 selection:bg-indigo-200 scroll-smooth relative">
 
     <!-- Header Section (로고 및 타이틀) -->
     <header class="pt-16 pb-12 px-4 bg-white border-b border-slate-100">
         <div class="max-w-5xl mx-auto flex flex-col items-center text-center">
             
-            <!-- 브랜드 로고 마크 (logo.png 적용 및 비율 최적화) -->
+            <!-- 브랜드 로고 마크 -->
             <div class="relative mb-6 group">
-                <!-- 원형 백그라운드 블러 효과 -->
                 <div class="absolute inset-0 bg-indigo-500 rounded-3xl blur-xl opacity-20 group-hover:opacity-40 transition-all duration-500 group-hover:scale-110"></div>
-                
-                <!-- 로고 외곽 프레임 (이중 테두리 제거 및 모던한 화이트 프레임화) -->
                 <div class="relative w-24 h-24 bg-white rounded-3xl shadow-md flex items-center justify-center transform group-hover:rotate-6 transition-all duration-300 overflow-hidden border border-slate-100">
-                    
-                    <!-- 
-                      [로고 이미지 연동] 
-                      logo.png 이미지가 있으면 전체 화면을 꽉 채우고 (w-full h-full object-cover), 
-                      불러오기 실패하면(onerror) 기존의 그라데이션과 gamepad 아이콘 백업을 적용합니다.
-                    -->
                     <img id="main-logo-img" src="logo.png" alt="이채립 게임즈 로고" class="w-full h-full object-cover z-10" onerror="this.style.display='none'; this.parentNode.classList.add('bg-gradient-to-tr', 'from-indigo-500', 'to-purple-600'); document.getElementById('fallback-logo-icon').classList.remove('hidden');">
-                    
-                    <!-- 이미지 로딩 실패 시 나타날 대체 아이콘 -->
                     <i id="fallback-logo-icon" data-lucide="gamepad-2" class="w-12 h-12 text-white animate-pulse hidden"></i>
                 </div>
             </div>
@@ -73,10 +91,9 @@
     <!-- Main Content Section -->
     <main class="max-w-6xl mx-auto px-6 py-12">
         
-        <!-- Quick Overview Section (한 눈에 보기 - 시리즈별 줄바꿈 적용) -->
+        <!-- Quick Overview Section -->
         <section class="mb-14">
             <div class="bg-gradient-to-r from-slate-50 to-slate-100/50 rounded-3xl border border-slate-200/80 p-6 md:p-8 relative overflow-hidden">
-                <!-- 장식용 배경 blur -->
                 <div class="absolute top-0 right-0 w-64 h-64 bg-indigo-50 rounded-full blur-3xl -z-10 translate-x-1/2 -translate-y-1/2 opacity-70"></div>
                 
                 <div class="flex items-center justify-between mb-8 border-b border-slate-200/60 pb-4">
@@ -86,7 +103,6 @@
                     <span id="game-count-badge" class="px-3 py-1 bg-indigo-50 text-indigo-600 rounded-full text-xs font-bold"></span>
                 </div>
                 
-                <!-- 시리즈별 줄넘김이 적용되는 레이아웃 컨테이너 -->
                 <div id="quick-overview-container" class="space-y-6"></div>
             </div>
         </section>
@@ -104,7 +120,6 @@
     <!-- Game Modal (Iframe 팝업창) -->
     <div id="game-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm hidden">
         <div class="bg-white w-full max-w-5xl h-[85vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden modal-zoom-in">
-            
             <!-- Modal Header -->
             <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
                 <div class="flex flex-col">
@@ -113,20 +128,10 @@
                 </div>
                 
                 <div class="flex items-center gap-2">
-                    <a 
-                        id="modal-external-link"
-                        href="#" 
-                        target="_blank" 
-                        rel="noreferrer"
-                        class="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-full transition-all"
-                        title="새 창에서 열기"
-                    >
+                    <a id="modal-external-link" href="#" target="_blank" rel="noreferrer" class="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-full transition-all" title="새 창에서 열기">
                         <i data-lucide="external-link" class="w-5 h-5"></i>
                     </a>
-                    <button 
-                        id="close-modal-btn"
-                        class="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-all"
-                    >
+                    <button id="close-modal-btn" class="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-all">
                         <i data-lucide="x" class="w-6 h-6"></i>
                     </button>
                 </div>
@@ -134,45 +139,61 @@
             
             <!-- Modal Iframe -->
             <div class="flex-1 w-full bg-black relative">
-                <!-- 로딩 안내 문구 -->
                 <div class="absolute inset-0 flex items-center justify-center text-white/50 z-0">
                     <div class="flex flex-col items-center gap-2">
                         <div class="w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
                         <p class="text-sm">게임을 불러오는 중...</p>
                     </div>
                 </div>
-                <iframe 
-                    id="modal-iframe"
-                    src="" 
-                    title="게임 화면"
-                    class="w-full h-full border-0 relative z-10"
-                    allow="autoplay; fullscreen"
-                ></iframe>
+                <iframe id="modal-iframe" src="" title="게임 화면" class="w-full h-full border-0 relative z-10" allow="autoplay; fullscreen"></iframe>
             </div>
         </div>
     </div>
 
+    <!-- 🔗 [추가] 링크 복사 완료 토스트 알림 모달 -->
+    <div id="toast-container" class="fixed bottom-10 left-1/2 transform -translate-x-1/2 z-50 pointer-events-none hidden">
+        <div class="bg-slate-800/95 backdrop-blur border border-slate-700 text-white px-5 py-3 rounded-full shadow-2xl flex items-center gap-3 text-sm font-medium">
+            <div class="p-1 bg-green-500 rounded-full">
+                <i data-lucide="check" class="w-3 h-3 text-white stroke-[3]"></i>
+            </div>
+            <span>게임 링크가 복사되었습니다! 🎉</span>
+        </div>
+    </div>
+
     <!-- JavaScript logic -->
-    <script>
-        // 게임 데이터 구조 정의 (한국지리 마스터 변경 / 세계지리 마스터 추가 완료)
+    <script type="module">
+        // 1. Firebase SDK 및 Firestore 불러오기
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-analytics.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+
+        // 2. Firebase 설정
+        const firebaseConfig = {
+            apiKey: "AIzaSyCiBIHltbbxp9BKSM381PyHe8VoBEwRvvo",
+            authDomain: "lcrgames-5a217.firebaseapp.com",
+            projectId: "lcrgames-5a217",
+            storageBucket: "lcrgames-5a217.firebasestorage.app",
+            messagingSenderId: "430370379756",
+            appId: "1:430370379756:web:25f14f67e60d33054b12c9",
+            measurementId: "G-6LRSMKVTQD"
+        };
+
+        // 3. Firebase 및 Firestore 초기화
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const db = getFirestore(app);
+
+        // 게임 데이터 구조
         const gameData = [
             {
-                category: "종합 게임",
-                icon: "gamepad-2",
-                iconColor: "text-indigo-500",
-                bgColor: "bg-indigo-50",
-                color: "from-indigo-400 to-purple-500",
+                category: "종합 게임", icon: "gamepad-2", iconColor: "text-indigo-500", bgColor: "bg-indigo-50", color: "from-indigo-400 to-purple-500",
                 games: [
                     { title: "Animal Hoops", desc: "동물 농구 게임", url: "https://cherryb29.github.io/AnimalHoops/", icon: "dog" },
                     { title: "증강 : 체스", desc: "여러가지 특수 능력이 있는 증강 체스게임", url: "https://cherryb29.github.io/Chess/", icon: "swords" }
                 ]
             },
             {
-                category: "밥 시리즈",
-                icon: "utensils",
-                iconColor: "text-orange-500",
-                bgColor: "bg-orange-50",
-                color: "from-orange-400 to-red-500",
+                category: "밥 시리즈", icon: "utensils", iconColor: "text-orange-500", bgColor: "bg-orange-50", color: "from-orange-400 to-red-500",
                 games: [
                     { title: "밥", desc: "메뉴 추천 수집 게임", url: "https://cherryb29.github.io/bob/", icon: "chef-hat" },
                     { title: "머지 밥", desc: "음식 합치기 게임", url: "https://cherryb29.github.io/MergeBob/", icon: "pizza" },
@@ -180,11 +201,7 @@
                 ]
             },
             {
-                category: "퀴즈",
-                icon: "brain",
-                iconColor: "text-teal-500",
-                bgColor: "bg-teal-50",
-                color: "from-teal-400 to-emerald-500",
+                category: "퀴즈", icon: "brain", iconColor: "text-teal-500", bgColor: "bg-teal-50", color: "from-teal-400 to-emerald-500",
                 games: [
                     { title: "절대 색감 퀴즈", desc: "절대 색감 퀴즈", url: "https://cherryb29.github.io/ColorQuiz/", icon: "palette" },
                     { title: "가짜 뉴스 판별 퀴즈", desc: "가짜 뉴스 판별 퀴즈", url: "https://cherryb29.github.io/AIQuiz/", icon: "file-question" },
@@ -206,70 +223,89 @@
         const modalIframe = document.getElementById('modal-iframe');
         const closeModalBtn = document.getElementById('close-modal-btn');
         const gameCountBadge = document.getElementById('game-count-badge');
+        const toastContainer = document.getElementById('toast-container');
+        let toastTimeout; // 토스트 알림 타이머 변수
 
         // 모달 열기 함수
         function openGame(game) {
             modalTitle.textContent = game.title;
             modalDesc.textContent = game.desc;
             modalExternalLink.href = game.url;
-            modalIframe.src = game.url; // iframe 로드 시작
+            modalIframe.src = game.url; 
             
             gameModal.classList.remove('hidden');
-            document.body.style.overflow = 'hidden'; // 배경 스크롤 방지
+            document.body.style.overflow = 'hidden';
         }
 
         // 모달 닫기 함수
         function closeModal() {
             gameModal.classList.add('hidden');
-            modalIframe.src = ''; // 배경음이나 소리가 계속 들리는 것을 방지하기 위해 비워둠
+            modalIframe.src = ''; 
             document.body.style.overflow = 'unset';
         }
 
-        // 특정 게임 카드 위치로 부드럽게 스크롤 & 깜빡임 효과 기능
+        // 부드러운 스크롤 함수
         function scrollToGame(gameId) {
             const targetCard = document.getElementById(gameId);
             if (targetCard) {
-                // 부드럽게 중앙으로 스크롤 이동
                 targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                
-                // 집중 포커싱 하이라이트 애니메이션 클래스 부여
                 targetCard.classList.add('card-highlight', 'ring-4', 'ring-indigo-500/40');
-                
-                // 1.5초 후 원래대로 복구
                 setTimeout(() => {
                     targetCard.classList.remove('card-highlight', 'ring-4', 'ring-indigo-500/40');
                 }, 1500);
             }
         }
 
-        // 총 게임 수 계산 및 배지 업데이트
+        // 🔗 [추가] 클립보드 복사 함수 (iFrame 호환)
+        function copyToClipboard(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+            } catch (err) {
+                console.error('링크 복사에 실패했습니다.', err);
+            }
+            document.body.removeChild(textarea);
+        }
+
+        // 🔗 [추가] 토스트 알림 표시 함수
+        function showToast() {
+            clearTimeout(toastTimeout);
+            toastContainer.classList.remove('hidden', 'toast-animate');
+            void toastContainer.offsetWidth; // 강제 리플로우 (애니메이션 재시작)
+            toastContainer.classList.add('toast-animate');
+            toastContainer.classList.remove('hidden');
+            
+            toastTimeout = setTimeout(() => {
+                toastContainer.classList.add('hidden');
+                toastContainer.classList.remove('toast-animate');
+            }, 3000); // 3초 후 숨김
+        }
+
+        // 총 게임 수 배지
         let totalGamesCount = 0;
         gameData.forEach(section => totalGamesCount += section.games.length);
         gameCountBadge.textContent = `총 ${totalGamesCount}개`;
 
-        // 1. "한 눈에 보기" 영역 생성 (시리즈별 줄바꿈 구조로 개편)
+        // 1. "한 눈에 보기" 영역 생성
         gameData.forEach(section => {
-            // 각 시리즈를 담을 로우(Row) 컨테이너 생성
             const seriesRow = document.createElement('div');
             seriesRow.className = "flex flex-col md:flex-row md:items-start gap-4 pb-4 border-b border-slate-200/40 last:border-0 last:pb-0";
             
-            // 로우 라벨 영역
             const seriesLabel = document.createElement('div');
             seriesLabel.className = "flex items-center gap-2 text-sm font-extrabold text-slate-500 w-full md:w-32 pt-2.5 shrink-0";
-            seriesLabel.innerHTML = `
-                <i data-lucide="${section.icon}" class="w-4 h-4 ${section.iconColor}"></i>
-                <span>${section.category}</span>
-            `;
+            seriesLabel.innerHTML = `<i data-lucide="${section.icon}" class="w-4 h-4 ${section.iconColor}"></i><span>${section.category}</span>`;
             seriesRow.appendChild(seriesLabel);
 
-            // 해당 시리즈의 미니 카드들을 감싸는 그리드 공간
             const miniGrid = document.createElement('div');
             miniGrid.className = "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 w-full";
 
             section.games.forEach(game => {
-                // 고유 식별자 ID 생성
                 const gameCardId = `game-card-${game.title.replace(/\s+/g, '-')}`;
-                
                 const card = document.createElement('button');
                 card.className = "flex flex-col items-start p-3 bg-white hover:bg-slate-50 border border-slate-200/60 rounded-2xl text-left transition-all duration-300 shadow-sm hover:shadow hover:border-indigo-300 transform hover:-translate-y-0.5 group w-full";
                 
@@ -282,8 +318,6 @@
                     </div>
                     <span class="text-xs font-bold text-slate-800 line-clamp-1 group-hover:text-indigo-600 transition-colors">${game.title}</span>
                 `;
-                
-                // 클릭하면 해당 카드로 자동 스크롤
                 card.addEventListener('click', () => scrollToGame(gameCardId));
                 miniGrid.appendChild(card);
             });
@@ -292,61 +326,41 @@
             quickOverviewContainer.appendChild(seriesRow);
         });
 
-        // 2. 카테고리별 상세 게임 카드 섹션 생성
+        // 2. 상세 게임 카드 생성
         gameData.forEach(section => {
-            // 카테고리 컨테이너
             const secElement = document.createElement('section');
             secElement.className = "mb-16";
 
-            // 카테고리 헤더
             const headerDiv = document.createElement('div');
             headerDiv.className = "flex items-center gap-3 mb-6 border-b-2 border-slate-200 pb-3";
-            headerDiv.innerHTML = `
-                <i data-lucide="${section.icon}" class="w-6 h-6 ${section.iconColor}"></i>
-                <h2 class="text-2xl font-bold text-slate-800">${section.category}</h2>
-            `;
+            headerDiv.innerHTML = `<i data-lucide="${section.icon}" class="w-6 h-6 ${section.iconColor}"></i><h2 class="text-2xl font-bold text-slate-800">${section.category}</h2>`;
             secElement.appendChild(headerDiv);
 
-            // 카드 그리드 컨테이너
             const gridDiv = document.createElement('div');
             gridDiv.className = "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8";
 
-            // 개별 게임 카드 생성
             section.games.forEach(game => {
                 const gameCardId = `game-card-${game.title.replace(/\s+/g, '-')}`;
                 const card = document.createElement('div');
-                card.id = gameCardId; // 자동 스크롤 대상 지정용 고유 ID 추가
+                card.id = gameCardId;
                 card.className = "group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer overflow-hidden border border-slate-100 flex flex-col";
                 
+                // 💖 Firebase 연동: 브라우저 저장소(localStorage)에서 내가 좋아요를 눌렀는지 확인
+                let isLiked = localStorage.getItem(`liked_${gameCardId}`) === 'true';
+                let currentLikes = 0; // DB에서 값을 불러오기 전 기본값
+
                 card.innerHTML = `
-                    <!-- 카드 썸네일 영역 (실시간 게임 iframe 미리보기로 개편) -->
                     <div class="h-44 bg-slate-900 relative overflow-hidden flex items-center justify-center border-b border-slate-100">
-                        <!-- 기본 그라데이션 배경 (iframe 로딩 전 / 대체용) -->
                         <div class="absolute inset-0 bg-gradient-to-br ${section.color} opacity-40 z-0"></div>
-                        
-                        <!-- 
-                          [실시간 iframe 미리보기]
-                          마우스 클릭을 방해하지 않도록 pointer-events-none을 설정하고,
-                          적당한 크기로 축소(scale-80)하여 게임 첫 화면이 예쁘게 들어오게 조정했습니다.
-                        -->
-                        <iframe 
-                            src="${game.url}" 
-                            title="${game.title} 미리보기"
-                            class="absolute inset-0 w-[125%] h-[125%] origin-top-left scale-[0.8] border-0 pointer-events-none z-10 opacity-80 group-hover:opacity-100 transition-opacity duration-300"
-                            scrolling="no"
-                            loading="lazy"
-                        ></iframe>
-                        
-                        <!-- 덮개 어둠 효과 및 Play 버튼 마크 -->
+                        <iframe src="${game.url}" title="${game.title} 미리보기" class="absolute inset-0 w-[125%] h-[125%] origin-top-left scale-[0.8] border-0 pointer-events-none z-10 opacity-80 group-hover:opacity-100 transition-opacity duration-300" scrolling="no" loading="lazy"></iframe>
                         <div class="absolute inset-0 bg-slate-950/10 group-hover:bg-slate-950/30 transition-all duration-300 z-20 flex items-center justify-center">
-                            <div class="bg-white/90 backdrop-blur-sm p-3 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transform scale-90 group-hover:scale-100 transition-all duration-300 z-30">
+                            <div class="bg-white/90 backdrop-blur-sm p-3 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transform scale-90 group-hover:scale-100 transition-all duration-300 z-30 pointer-events-none">
                                 <i data-lucide="play" class="w-6 h-6 text-indigo-600 fill-indigo-600"></i>
                             </div>
                         </div>
                     </div>
                     
-                    <!-- 카드 설명 영역 -->
-                    <div class="p-5 flex-1 flex flex-col justify-between">
+                    <div class="p-5 flex-1 flex flex-col justify-between relative z-30">
                         <div>
                             <h3 class="text-xl font-bold text-slate-800 mb-2 group-hover:text-indigo-600 transition-colors flex items-center gap-2">
                                 <i data-lucide="${game.icon}" class="w-5 h-5 text-slate-400 group-hover:text-indigo-500 transition-colors"></i>
@@ -354,15 +368,94 @@
                             </h3>
                             <p class="text-slate-500 text-sm line-clamp-2 leading-relaxed">${game.desc}</p>
                         </div>
-                        <div class="mt-4 flex items-center text-xs font-semibold text-indigo-500 uppercase tracking-wider">
-                            Play Now 
-                            <span class="ml-2 group-hover:translate-x-1 transition-transform">→</span>
+                        
+                        <!-- 💖/🔗 [수정] 하단 Play 버튼 및 추가 액션 버튼(좋아요, 공유) 영역 -->
+                        <div class="mt-5 flex items-center justify-between border-t border-slate-50 pt-3">
+                            <div class="flex items-center text-xs font-bold text-indigo-500 uppercase tracking-wider group-hover:translate-x-1 transition-transform pointer-events-none">
+                                Play Now <span class="ml-1">→</span>
+                            </div>
+                            
+                            <div class="flex items-center gap-3">
+                                <!-- 좋아요 버튼 (내가 눌렀다면 is-liked 클래스 자동 추가) -->
+                                <button class="like-btn flex items-center gap-1.5 text-slate-400 hover:text-red-500 transition-all px-2 py-1 -ml-2 rounded-lg hover:bg-red-50 ${isLiked ? 'is-liked' : ''}" title="좋아요">
+                                    <i data-lucide="heart" class="w-4 h-4 transition-colors"></i>
+                                    <span class="like-count text-xs font-bold font-mono mt-0.5">...</span>
+                                </button>
+                                
+                                <!-- 구분선 -->
+                                <div class="w-px h-3 bg-slate-200"></div>
+                                
+                                <!-- 공유 버튼 -->
+                                <button class="share-btn flex items-center justify-center text-slate-400 hover:text-indigo-600 transition-all p-1.5 rounded-full hover:bg-indigo-50" title="링크 복사">
+                                    <i data-lucide="share-2" class="w-4 h-4"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 `;
 
-                // 카드를 클릭하면 원래대로 게임 모달 팝업 실행
-                card.addEventListener('click', () => openGame(game));
+                // 🌟 이벤트 리스너 및 Firebase 로직 연결
+                const likeBtn = card.querySelector('.like-btn');
+                const likeCountSpan = card.querySelector('.like-count');
+                const shareBtn = card.querySelector('.share-btn');
+                
+                // Firestore 문서 참조 (각 게임의 고유 ID 기준)
+                const gameDocRef = doc(db, "games", gameCardId);
+
+                // 🌟 비동기(async)로 DB에서 실시간 좋아요 수 불러오기
+                getDoc(gameDocRef).then((docSnap) => {
+                    if (docSnap.exists()) {
+                        currentLikes = docSnap.data().likes || 0;
+                    } else {
+                        // DB에 해당 게임 정보가 아직 없으면 좋아요 0으로 문서 생성!
+                        setDoc(gameDocRef, { likes: 0 });
+                        currentLikes = 0;
+                    }
+                    likeCountSpan.textContent = currentLikes; // 화면에 진짜 숫자 표시
+                }).catch(err => {
+                    console.error("좋아요 불러오기 실패:", err);
+                    likeCountSpan.textContent = "0"; // 실패 시 0 표시
+                });
+
+                // 1. 카드 클릭 (모달 열기)
+                card.addEventListener('click', (e) => {
+                    // 버튼들을 클릭한 경우는 모달이 열리지 않도록 이벤트 버블링 차단
+                    if (e.target.closest('.like-btn') || e.target.closest('.share-btn')) return;
+                    openGame(game);
+                });
+
+                // 2. 좋아요 버튼 클릭 (Firebase 업데이트 연동)
+                likeBtn.addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    isLiked = !isLiked; // 상태 토글
+                    
+                    if (isLiked) {
+                        currentLikes++;
+                        likeBtn.classList.add('is-liked', 'heart-bounce');
+                        localStorage.setItem(`liked_${gameCardId}`, 'true'); // 내 브라우저에 "눌렀음" 저장
+                        
+                        setTimeout(() => { likeBtn.classList.remove('heart-bounce'); }, 400);
+                        
+                        // DB에 +1 업데이트 요청 (서버 저장)
+                        await updateDoc(gameDocRef, { likes: increment(1) }).catch(console.error);
+                    } else {
+                        currentLikes--;
+                        likeBtn.classList.remove('is-liked');
+                        localStorage.removeItem(`liked_${gameCardId}`); // 내 브라우저에서 기록 삭제
+                        
+                        // DB에 -1 업데이트 요청 (서버 저장)
+                        await updateDoc(gameDocRef, { likes: increment(-1) }).catch(console.error);
+                    }
+                    likeCountSpan.textContent = currentLikes; // 바뀐 숫자 즉시 표시
+                });
+
+                // 3. 공유 버튼 클릭
+                shareBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    copyToClipboard(game.url); // GitHub 주소 복사
+                    showToast(); // 모달 알림 띄우기
+                });
+
                 gridDiv.appendChild(card);
             });
 
@@ -370,24 +463,12 @@
             gamesContainer.appendChild(secElement);
         });
 
-        // 모달 닫기 이벤트 리스너들
+        // 모달 닫기 이벤트 리스너
         closeModalBtn.addEventListener('click', closeModal);
-        
-        // 모달 바깥 어두운 배경 클릭 시 닫기
-        gameModal.addEventListener('click', (e) => {
-            if (e.target === gameModal) {
-                closeModal();
-            }
-        });
+        gameModal.addEventListener('click', (e) => { if (e.target === gameModal) closeModal(); });
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !gameModal.classList.contains('hidden')) closeModal(); });
 
-        // Esc 키 누를 때 모달 닫기
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && !gameModal.classList.contains('hidden')) {
-                closeModal();
-            }
-        });
-
-        // HTML 렌더링이 완료된 후 Lucide 아이콘 활성화
+        // Lucide 아이콘 활성화
         lucide.createIcons();
     </script>
 </body>
