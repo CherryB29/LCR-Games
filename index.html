@@ -322,17 +322,20 @@
             section.games.forEach(game => {
                 const gameCardId = getSafeId(game.title);
                 const card = document.createElement('button');
-                card.className = "flex flex-col items-start p-3 bg-white hover:bg-slate-50 border border-slate-200/60 rounded-2xl text-left transition-all duration-300 shadow-sm hover:shadow hover:border-indigo-300 transform hover:-translate-y-0.5 group w-full relative overflow-hidden";
+                // 🌟 [수정] 훈장이 박스 밖으로 튀어나올 수 있도록 overflow-hidden을 overflow-visible로 변경했습니다.
+                card.className = "flex flex-col items-start p-3 bg-white hover:bg-slate-50 border border-slate-200/60 rounded-2xl text-left transition-all duration-300 shadow-sm hover:shadow hover:border-indigo-300 transform hover:-translate-y-0.5 group w-full relative overflow-visible";
                 
                 card.innerHTML = `
+                    <!-- 🌟 [수정] 오른쪽 상단에 훈장 스타일로 배치되는 불꽃 인기 배지 -->
+                    <div class="popular-badge-${gameCardId} hidden absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-br from-red-500 to-amber-500 rounded-full shadow-md flex items-center justify-center z-20 border border-white">
+                        <i data-lucide="flame" class="w-3.5 h-3.5 text-white fill-white animate-pulse"></i>
+                    </div>
+
                     <div class="flex items-center gap-2.5 w-full mb-1">
                         <div class="p-1.5 rounded-lg ${section.bgColor} group-hover:scale-110 transition-all duration-300">
                             <i data-lucide="${game.icon}" class="w-4 h-4 ${section.iconColor}"></i>
                         </div>
                         <span class="text-[10px] font-bold text-slate-400 block truncate max-w-[55px]">${section.category}</span>
-                        
-                        <!-- 🔥 인기 딱지 -->
-                        <span class="popular-badge-${gameCardId} hidden px-1.5 py-0.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-[9px] font-black rounded-md ml-auto shadow animate-pulse">인기</span>
                     </div>
                     <span class="text-xs font-bold text-slate-800 line-clamp-1 group-hover:text-indigo-600 transition-colors">${game.title}</span>
                     
@@ -392,7 +395,7 @@
                             </h3>
                             <p class="text-slate-500 text-sm line-clamp-2 leading-relaxed mb-4">${game.desc}</p>
                             
-                            <!-- ⭐ 모바일 드래그/스와이프형 터치 평점 남기기 세그먼트 (가이드 문구 정리) -->
+                            <!-- ⭐ 모바일 드래그/스와이프형 터치 평점 남기기 세그먼트 -->
                             <div class="bg-slate-50 rounded-xl p-3 border border-slate-100 flex flex-col gap-2 transition-all">
                                 <div class="flex items-center justify-between">
                                     <span class="text-xs font-extrabold text-slate-500">내 평가 남기기</span>
