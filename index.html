@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>이채립 게임즈 - Lee Chae Rip Games</title>
+    <title> 이채립 게임즈 </title>
     
     <link rel="shortcut icon" href="app-icon.png" type="image/x-icon">
     <link rel="apple-touch-icon" href="app-icon.png">
@@ -196,13 +196,30 @@
             return 'game-card-' + title.replace(/[^a-zA-Z0-9가-힣-_]/g, '-').replace(/-+/g, '-');
         }
 
+        // 별 SVG 마크업 생성기 (0.1점 단위 채움 지원)
+        function createStarSvgMarkup(gameCardId, starIdx) {
+            const clipId = `${gameCardId}-clip-${starIdx}`;
+            return `
+                <svg class="w-7 h-7 pointer-events-none" viewBox="0 0 24 24" stroke="#cbd5e1" stroke-width="2" fill="#e2e8f0" stroke-linecap="round" stroke-linejoin="round">
+                    <defs>
+                        <clipPath id="${clipId}">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+                        </clipPath>
+                    </defs>
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="#cbd5e1" stroke-width="2" fill="#e2e8f0" stroke-linecap="round" stroke-linejoin="round"></path>
+                    <rect class="star-fill-rect" x="0" y="0" width="0" height="24" fill="#fbbf24" clip-path="url(#${clipId})"></rect>
+                </svg>
+            `;
+        }
+
         // 게임 데이터 구조
         const gameData = [
             {
                 category: "종합 게임", icon: "gamepad-2", iconColor: "text-indigo-500", bgColor: "bg-indigo-50", color: "from-indigo-400 to-purple-500",
                 games: [
                     { title: "Animal Hoops", desc: "동물 농구 게임", url: "https://cherryb29.github.io/AnimalHoops/", icon: "dog" },
-                    { title: "증강 : 체스", desc: "여러가지 특수 능력이 있는 증강 체스게임", url: "https://cherryb29.github.io/Chess/", icon: "swords" }
+                    { title: "증강 : 체스", desc: "여러가지 특수 능력이 있는 증강 체스게임", url: "https://cherryb29.github.io/Chess/", icon: "swords" },
+                    { title: "픽클", desc: "그림 경매", url: "https://cherryb29.github.io/Pickle/", icon: "brush" }
                 ]
             },
             {
@@ -210,7 +227,8 @@
                 games: [
                     { title: "밥", desc: "메뉴 추천 수집 게임", url: "https://cherryb29.github.io/bob/", icon: "chef-hat" },
                     { title: "머지 밥", desc: "음식 합치기 게임", url: "https://cherryb29.github.io/MergeBob/", icon: "pizza" },
-                    { title: "디펜스 밥", desc: "음식 디펜스 게임", url: "https://cherryb29.github.io/defense-bob/", icon: "shield" }
+                    { title: "디펜스 밥", desc: "음식 디펜스 게임", url: "https://cherryb29.github.io/defense-bob/", icon: "shield" },
+                    { title: "런 밥", desc: "타임어택 러닝 액션 게임", url: "https://cherryb29.github.io/RunBOB/", icon: "zap" }
                 ]
             },
             {
@@ -405,33 +423,15 @@
                                 <!-- 🌟 드래그 동작을 직접 받는 고정형 터치 패널 및 완벽한 반 별 지원 SVG 커스텀 태그 -->
                                 <div class="flex items-center gap-2 mt-1">
                                     <div class="star-swipe-panel-${gameCardId} flex items-center gap-1.5 py-1 select-none touch-none cursor-pointer" data-game-id="${gameCardId}">
-                                        <!-- 인라인 벡터 기반 100% 호환성 별 아이콘 (0.5그라데이션 대응) -->
-                                        <div class="star-item-${gameCardId} w-8 h-8 flex items-center justify-center transition-transform" data-star-idx="1">
-                                            <svg class="w-7 h-7 pointer-events-none" viewBox="0 0 24 24" stroke="#cbd5e1" stroke-width="2" fill="#e2e8f0" stroke-linecap="round" stroke-linejoin="round">
-                                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
-                                            </svg>
-                                        </div>
-                                        <div class="star-item-${gameCardId} w-8 h-8 flex items-center justify-center transition-transform" data-star-idx="2">
-                                            <svg class="w-7 h-7 pointer-events-none" viewBox="0 0 24 24" stroke="#cbd5e1" stroke-width="2" fill="#e2e8f0" stroke-linecap="round" stroke-linejoin="round">
-                                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
-                                            </svg>
-                                        </div>
-                                        <div class="star-item-${gameCardId} w-8 h-8 flex items-center justify-center transition-transform" data-star-idx="3">
-                                            <svg class="w-7 h-7 pointer-events-none" viewBox="0 0 24 24" stroke="#cbd5e1" stroke-width="2" fill="#e2e8f0" stroke-linecap="round" stroke-linejoin="round">
-                                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
-                                            </svg>
-                                        </div>
-                                        <div class="star-item-${gameCardId} w-8 h-8 flex items-center justify-center transition-transform" data-star-idx="4">
-                                            <svg class="w-7 h-7 pointer-events-none" viewBox="0 0 24 24" stroke="#cbd5e1" stroke-width="2" fill="#e2e8f0" stroke-linecap="round" stroke-linejoin="round">
-                                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
-                                            </svg>
-                                        </div>
-                                        <div class="star-item-${gameCardId} w-8 h-8 flex items-center justify-center transition-transform" data-star-idx="5">
-                                            <svg class="w-7 h-7 pointer-events-none" viewBox="0 0 24 24" stroke="#cbd5e1" stroke-width="2" fill="#e2e8f0" stroke-linecap="round" stroke-linejoin="round">
-                                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
-                                            </svg>
-                                        </div>
+                                        <div class="star-item-${gameCardId} w-8 h-8 flex items-center justify-center transition-transform" data-star-idx="1">${createStarSvgMarkup(gameCardId, 1)}</div>
+                                        <div class="star-item-${gameCardId} w-8 h-8 flex items-center justify-center transition-transform" data-star-idx="2">${createStarSvgMarkup(gameCardId, 2)}</div>
+                                        <div class="star-item-${gameCardId} w-8 h-8 flex items-center justify-center transition-transform" data-star-idx="3">${createStarSvgMarkup(gameCardId, 3)}</div>
+                                        <div class="star-item-${gameCardId} w-8 h-8 flex items-center justify-center transition-transform" data-star-idx="4">${createStarSvgMarkup(gameCardId, 4)}</div>
+                                        <div class="star-item-${gameCardId} w-8 h-8 flex items-center justify-center transition-transform" data-star-idx="5">${createStarSvgMarkup(gameCardId, 5)}</div>
                                     </div>
+                                    <button type="button" class="rating-edit-btn-${gameCardId} hidden text-[10px] font-black text-indigo-600 hover:text-indigo-700 whitespace-nowrap px-2.5 py-1.5 rounded-md bg-indigo-50 hover:bg-indigo-100 transition-colors ml-auto" title="평점 수정">
+                                        <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
+                                    </button>
                                     <button type="button" class="rating-reset-btn-${gameCardId} hidden text-[10px] font-black text-red-500 hover:text-red-700 whitespace-nowrap px-2.5 py-1.5 rounded-md bg-red-50 hover:bg-red-100 transition-colors ml-auto">취소</button>
                                 </div>
                             </div>
@@ -469,7 +469,7 @@
             gamesContainer.appendChild(secElement);
         });
 
-        // ⭐ 별 그리기 핵심 공통 모듈 (어두운 테두리 없이 노란 별만 남기도록 개선)
+        // ⭐ 별 그리기 핵심 공통 모듈 (0.1점 단위로 부드럽게 채워지도록 개선)
         function drawStars(gameCardId, rating) {
             const card = document.getElementById(gameCardId);
             if (!card) return;
@@ -477,21 +477,23 @@
             starItems.forEach(item => {
                 const starIdx = parseInt(item.getAttribute('data-star-idx'));
                 const svg = item.querySelector('svg');
-                if (svg) {
-                    svg.removeAttribute('style');
-                    
-                    if (rating >= starIdx) {
-                        // 1. 온전한 풀 스타 (테두리를 투명하게 설정하여 어두운 라인 제거)
-                        svg.setAttribute('stroke', 'transparent');
-                        svg.setAttribute('fill', '#fbbf24');   // amber-400
-                    } else if (rating >= starIdx - 0.5) {
-                        // 2. 정확한 반 별 (테두리 투명하게 한 채 그라데이션 필터 적용)
-                        svg.setAttribute('stroke', 'transparent'); 
-                        svg.style.fill = 'url(#half-star-grad)';
+                if (!svg) return;
+
+                const rect = svg.querySelector('.star-fill-rect');
+                const path = svg.querySelector('path');
+                const fillFraction = Math.max(0, Math.min(1, rating - (starIdx - 1)));
+
+                if (rect) {
+                    rect.setAttribute('width', `${24 * fillFraction}`);
+                }
+
+                if (path) {
+                    if (fillFraction <= 0) {
+                        path.setAttribute('stroke', '#cbd5e1');
+                        path.setAttribute('fill', '#e2e8f0');
                     } else {
-                        // 3. 빈 별 (정교한 연회색 테두리와 백그라운드 기본 유지)
-                        svg.setAttribute('stroke', '#cbd5e1');
-                        svg.setAttribute('fill', '#e2e8f0');
+                        path.setAttribute('stroke', 'transparent');
+                        path.setAttribute('fill', '#e2e8f0');
                     }
                 }
             });
@@ -557,11 +559,21 @@
 
                         // 내 평점 별 채우기 상태
                         const myRating = state.userRatings[gameCardId] || 0;
+                        const myRatingText = (myRating || 0).toFixed(1);
                         const ratingStatusText = card.querySelector(`.user-rating-status-${gameCardId}`);
+                        const ratingEditBtn = card.querySelector(`.rating-edit-btn-${gameCardId}`);
                         const ratingResetBtn = card.querySelector(`.rating-reset-btn-${gameCardId}`);
 
                         if (ratingStatusText) {
-                            ratingStatusText.textContent = myRating > 0 ? `내가 준 평점: ⭐ ${myRating}점` : "아직 평가 안 함";
+                            ratingStatusText.textContent = myRating > 0 ? `내가 준 평점: ⭐ ${myRatingText}점` : "아직 평가 안 함";
+                        }
+
+                        if (ratingEditBtn) {
+                            if (myRating > 0) {
+                                ratingEditBtn.classList.remove('hidden');
+                            } else {
+                                ratingEditBtn.classList.add('hidden');
+                            }
                         }
 
                         if (ratingResetBtn) {
@@ -658,24 +670,34 @@
 
                     const shareBtn = card.querySelector('.share-btn');
                     const starSwipePanel = card.querySelector(`.star-swipe-panel-${gameCardId}`);
+                    const ratingEditBtn = card.querySelector(`.rating-edit-btn-${gameCardId}`);
                     const ratingResetBtn = card.querySelector(`.rating-reset-btn-${gameCardId}`);
+                    let isEditingRating = false;
+                    card.dataset.ratingEditing = 'false';
 
                     // A. 카드 자체 클릭 (게임 실행용 Iframe 모달 오프너)
                     card.addEventListener('click', (e) => {
-                        if (e.target.closest('.share-btn') || e.target.closest(`[class*="star-swipe-panel-"]`) || e.target.closest(`[class*="rating-reset-btn-"]`)) return;
+                        if (e.target.closest('.share-btn') || e.target.closest(`[class*="star-swipe-panel-"]`) || e.target.closest(`[class*="rating-reset-btn-"]`) || e.target.closest(`[class*="rating-edit-btn-"]`)) return;
                         openGame(game);
                     });
 
                     // 🌟 C. 공통 평점 저장 비동기 함수 (드래그 확정용)
                     async function commitRating(newRating) {
                         const oldRating = state.userRatings[gameCardId] || 0;
-                        if (oldRating === newRating) return;
+                        if (oldRating === newRating) {
+                            isEditingRating = false;
+                            card.dataset.ratingEditing = 'false';
+                            updateUI();
+                            return;
+                        }
 
                         if (newRating === 0) {
                             // 평점 취소 처리
                             state.userRatings[gameCardId] = 0;
-                            state.games[gameCardId].ratingSum -= oldRating;
-                            state.games[gameCardId].ratingCount--;
+                            if (oldRating > 0) {
+                                state.games[gameCardId].ratingSum -= oldRating;
+                                state.games[gameCardId].ratingCount--;
+                            }
 
                             if (useFirebase) {
                                 await setDoc(doc(db, "artifacts", appId, "users", activeUserId, "ratings", gameCardId), { rating: 0 }).catch(console.error);
@@ -712,6 +734,8 @@
                         localStorage.setItem(`local_sum_${gameCardId}`, state.games[gameCardId].ratingSum);
                         localStorage.setItem(`local_count_${gameCardId}`, state.games[gameCardId].ratingCount);
                         
+                        isEditingRating = false;
+                        card.dataset.ratingEditing = 'false';
                         updateUI();
                     }
 
@@ -723,8 +747,8 @@
                         let rawRating = ratio * 5;
                         
                         // 0.5 단위 반올림 조율
-                        let rating = Math.round(rawRating * 2) / 2;
-                        rating = Math.max(0.5, Math.min(5, rating)); // 최소 0.5점에서 최대 5점까지 바인딩
+                        let rating = Math.round(rawRating * 10) / 10;
+                        rating = Math.max(0.1, Math.min(5, rating)); // 최소 0.1점에서 최대 5점까지 바인딩
                         
                         // 만약 슬라이더 왼쪽 밖으로 한참 벗어나면 취소하기 용이하게 0점 수용
                         if (relX < -15) rating = 0;
@@ -736,6 +760,14 @@
                     // 모바일 터치 및 데스크톱 마우스 통합 이벤트 리스너 (Pointer API)
                     starSwipePanel.addEventListener('pointerdown', (e) => {
                         e.stopPropagation();
+                        const myRating = state.userRatings[gameCardId] || 0;
+                        if (!isEditingRating && myRating > 0) {
+                            const statusText = card.querySelector(`.user-rating-status-${gameCardId}`);
+                            if (statusText) statusText.textContent = '수정하려면 펜 버튼을 누르세요';
+                            drawStars(gameCardId, myRating);
+                            return;
+                        }
+
                         isDragging = true;
                         starSwipePanel.setPointerCapture(e.pointerId); // 화면 밖으로 이탈시 트래킹 보장
                         const tempVal = getRatingFromPointer(e.clientX);
@@ -750,7 +782,7 @@
                         
                         const statusText = card.querySelector(`.user-rating-status-${gameCardId}`);
                         if (statusText) {
-                            statusText.textContent = `평가 중: ⭐ ${tempVal}점`;
+                            statusText.textContent = `평가 중: ⭐ ${tempVal.toFixed(1)}점`;
                         }
                     });
 
@@ -768,7 +800,21 @@
                         isDragging = false;
                     });
 
-                    // C-4. 평점 취소 버튼 클릭 처리
+                    // C-4. 평점 수정 버튼 클릭 처리
+                    ratingEditBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const myRating = state.userRatings[gameCardId] || 0;
+                        if (myRating <= 0) return;
+
+                        isEditingRating = !isEditingRating;
+                        card.dataset.ratingEditing = String(isEditingRating);
+                        if (isEditingRating) {
+                            showToast('✏️ 평점을 수정할 수 있습니다. 별을 드래그해 주세요.');
+                        }
+                        updateUI();
+                    });
+
+                    // C-5. 평점 취소 버튼 클릭 처리
                     ratingResetBtn.addEventListener('click', (e) => {
                         e.stopPropagation();
                         commitRating(0);
